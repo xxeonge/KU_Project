@@ -1,7 +1,7 @@
 import contractAbi from "./abi.js";
 
 // Ethereum 스마트 컨트랙트 주소 
-const contractAddress = '0x0358BA3cFB2039253EAF44cF55e0fDb248e37138';
+const contractAddress = '0x38D00185DC0eBFdd0A0AFb4a229eFb4FaB3Cd7Bc';
 // Web3 객체 생성
 const web3 = new Web3(window.ethereum);
 // 스마트 컨트랙트 객체 생성

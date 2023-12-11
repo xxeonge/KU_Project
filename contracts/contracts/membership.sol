@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.20;
+import 'hardhat/console.sol';
 
 // 인터페이스: ERC20 토큰 전송 함수 사용
 interface IERC20  {
