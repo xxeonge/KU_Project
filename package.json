@@ -1,0 +1,26 @@
+{
+  "name": "toyproject_1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "parcel": "^2.10.3"
+  },
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "type": "module",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.1",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "ethers": "^6.8.1",
+    "express": "^4.18.2",
+    "web": "^0.0.2",
+    "web3": "^4.2.2"
+  },
+  "keywords": [],
+  "description": ""
+}
