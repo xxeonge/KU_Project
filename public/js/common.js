@@ -1,11 +1,12 @@
 import contractAbi from "./abi.js";
+import tokenAbi from "./tokenabi.js";
 
 // Ethereum 스마트 컨트랙트 주소 
-const contractAddress = '0x38D00185DC0eBFdd0A0AFb4a229eFb4FaB3Cd7Bc';
-// Web3 객체 생성
+const contractAddress = '0xf777cC2569Cbcf8D31F4ed63641F3c9d13b35841';
 const web3 = new Web3(window.ethereum);
-// 스마트 컨트랙트 객체 생성
-const contract = new web3.eth.Contract(contractAbi, contractAddress);
+let contract = new web3.eth.Contract(contractAbi, contractAddress);
+//FEE token 스마트 컨트랙트 주소
+const tokenContractAddress = '0xa6Bd8Ab2B991C55A3e8ED521376F7A6B20c3A9A0';
 
 
 //connetWallet
@@ -13,38 +14,36 @@ export const connectWallet = async() => {
 	// MetaMask 계정 요청
 	const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
 	const account = accounts[0];
-	console.log('MetaMask 계정 주소:', account);
-
+	console.log(account);
 	// 버튼 텍스트 업데이트
 	document.getElementById('button').textContent = account;
 
 	ethereum.on('accountsChanged', (accounts) => {
 		const account = accounts[0];
-		console.log('Metamask 계정 주소: ', account);
 		document.getElementById('button').textContent = account;
 	});
 }
 
+//checkUser, authenticateUser
 export const checkMember = async () => {
 	const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
 	const account = accounts[0];
-	const membershipId = document.getElementById('membershipid').value;
+	const carNo =document.getElementById('carnumber').value;
 
 	const isMember = await contract.methods.checkUser().call({ from: account });
-	console.log('Membershp ID: ', membershipId);
-	console.log(web3.utils.keccak256(ethers.utils.formatBytes32String(membershipId)));
-	
+	// 가입비를 낸 멤버일 경우
 	if (isMember) {
-		const isAuthenticated = await contract.methods.authenticateUser(ethers.utils.formatBytes32String(membershipId)).call({ from: account });
-		
+		const isAuthenticated = await contract.methods.authenticateUser(Number(carNo)).call({ from: account });
+		// 등록한 주차번호가 맞는지 확인
 		if(isAuthenticated) {
-			alert('Password is correct!');
+			alert('Parking Number is correct! Redirecting to service page.');
 			window.location.href = 'service';
 		}
 		else {
-			alert('Incorrect password. Please try again');
+			alert('Incorrect Parking Number. Please try again.');
 		}
 	}
+	// 가입비를 내지 않음.
 	else  {
 		const joinConfirmation = confirm('You\'re a not a member. Would you like to join?');
 		if(joinConfirmation) {
@@ -57,54 +56,54 @@ export const checkMember = async () => {
 	}
 }
 
-//join
+//registerUser
 export const join = async () => {
-    const accounts = await ethereum.request({method: 'eth_requestAccounts' });
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
     const account = accounts[0];
-	const joinId = document.getElementById('join_Id').value;
-	console.log('Membership Id: ', joinId);
+    const parkingNumber = document.getElementById('carnumber2').value;
+	contract = new web3.eth.Contract(contractAbi, contractAddress, account.signer);
+	const tokenContract = new web3.eth.Contract(tokenAbi, tokenContractAddress, account.signer);
+    // 가입비
+    const membershipFee = await contract.methods.getMembershipFee().call();
+	
+    // 가입비 승인
+    const approvalTransaction = await tokenContract.methods.approve(contractAddress, membershipFee).send({ from: account });
+	alert('Transaction in progress...');
 
-	// 멤버십ID를 keccak256로 변환
-    const _hashedPassword = web3.utils.keccak256(ethers.utils.formatBytes32String(joinId));
-    console.log('keccak256로 변환된 joinId:', _hashedPassword);
+    if (approvalTransaction.status) {
+        // 회원가입 트랜잭션
+        const feeTransaction = await contract.methods.registerUser(parkingNumber).send({ from: account });
 
-    //스마트 컨트랙트에 회원가입 요청
-    const result = await contract.methods.registerUser(_hashedPassword).send({ from: account });
-    console.log(result);
-
-    if(result.status) {
-        console.log('user registered successfully');
-        //가입 성공 ok 누르면 서비스 이용 창으로 이동함.
-        const confirmation = confirm('Press OK and you\'ll be taken to the Services page.');
-
-        if (confirmation) {
-        	window.location.href = 'service';
+        if (feeTransaction.status) {
+            const confirmation = confirm('Registration is successful. Press Ok, Go to service page.');
+            if (confirmation) {
+                window.location.href = 'service';
+            } else {
+                window.location.href = '/';
+            }
         } else {
-        	window.location.href = '/';
+            alert('User registration failed. Please try again');
         }
-    }
-    else {
-        console.log('user registration failed');
-    }
-};
+    }s
+}
 
 //inTimestamp
 export const inTimestamp = async () => {
 	const accounts = await ethereum.request({method: 'eth_requestAccounts' });
 	const account = accounts[0];
+
     //버튼 누르면 타임 저장.
-    const transaction = await contract.methods.getEntryTimestamp().send({ from: account });
+    const transaction = await contract.methods.entryTimestamp().send({ from: account });
 	alert('Transaction in progress...');
-    const showTimestamp = transaction.events.EntryRecorded.returnValues.entryTimestamp;
+    const showTimestamp = transaction.events.EntryRecorded.returnValues.entryTimestamps;
 
 	//한국시간 변환
-
 	const _showTimestamp = Number(showTimestamp);
-	const date = new Date(_showTimestamp * 1000); // Unix timestamp는 초 단위이므로 1000을 곱해 밀리초로 변환
+	const date = new Date(_showTimestamp * 1000); 
 
     // Date 객체에서 각 부분을 추출
     const year = date.getFullYear();
-    const month = date.getMonth() + 1; // getMonth는 0에서 11까지 반환하므로 1을 더해줌
+    const month = date.getMonth() + 1; 
     const day = date.getDate();
     const hours = date.getHours();
     const minutes = date.getMinutes();
@@ -112,11 +111,8 @@ export const inTimestamp = async () => {
 
     // 변환된 날짜 및 시간을 문자열로 조합
     const formattedTimestamp = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-	//저장
 	localStorage.setItem('entryTimestamp', formattedTimestamp);
 	document.getElementById('inBtn').textContent = formattedTimestamp;
-	console.log(formattedTimestamp);
-	
 }
 
 //outTimestamp
@@ -128,11 +124,11 @@ export const outTimestamp = async () => {
 	
 	//한국시간 변환
 	const _currentTimestamp = Number(currentTimestamp);
-	const date = new Date(_currentTimestamp * 1000); // Unix timestamp는 초 단위이므로 1000을 곱해 밀리초로 변환
+	const date = new Date(_currentTimestamp * 1000);
 
     // Date 객체에서 각 부분을 추출
     const year = date.getFullYear();
-    const month = date.getMonth() + 1; // getMonth는 0에서 11까지 반환하므로 1을 더해줌
+    const month = date.getMonth() + 1;
     const day = date.getDate();
     const hours = date.getHours();
     const minutes = date.getMinutes();
@@ -144,13 +140,20 @@ export const outTimestamp = async () => {
 
 	const exitTransaction = await contract.methods.exitFee().send({ from: account });
 	const fee = exitTransaction.events.ExitRecorded.returnValues.fee;
-	alert('Transaction in progress...');
-	console.log(fee);
-
-	if(exitTransaction.status){
-		window.location.href= '/';
-		alert('Payment completed. Good bye');
-	}
+	
+	//fee가 0이 아닐 때
+	if (fee > 0) {
+		alert('Transaction in progress...');
+			if (exitTransaction.status) {
+				window.location.href ='/';
+				alert('Payment completed. Good bye!');
+			}
+	} else {
+		alert('Transaction in progress...');
+		window.location.href ='/';
+		alert('This exit is free. Have a nice day!');
+		
+		}
 
 };
 

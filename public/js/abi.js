@@ -1,4 +1,4 @@
-const contractAbi =[
+const contractAbi = [
 	{
 		"inputs": [
 			{
@@ -18,6 +18,12 @@ const contractAbi =[
 				"internalType": "address",
 				"name": "userAddress",
 				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "parkingNumber",
+				"type": "uint256"
 			}
 		],
 		"name": "AccountRegistered",
@@ -34,27 +40,8 @@ const contractAbi =[
 			},
 			{
 				"indexed": false,
-				"internalType": "bool",
-				"name": "isAuthenticated",
-				"type": "bool"
-			}
-		],
-		"name": "AuthenticationResult",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "userAddress",
-				"type": "address"
-			},
-			{
-				"indexed": false,
 				"internalType": "uint256",
-				"name": "entryTimestamp",
+				"name": "entryTimestamps",
 				"type": "uint256"
 			}
 		],
@@ -63,9 +50,16 @@ const contractAbi =[
 	},
 	{
 		"inputs": [],
+		"name": "entryTimestamp",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "exitFee",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -94,18 +88,11 @@ const contractAbi =[
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "getEntryTimestamp",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
-				"internalType": "bytes32",
-				"name": "_hashedPassword",
-				"type": "bytes32"
+				"internalType": "uint256",
+				"name": "_parkingNumber",
+				"type": "uint256"
 			}
 		],
 		"name": "registerUser",
@@ -116,41 +103,9 @@ const contractAbi =[
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "newUser",
-				"type": "address"
-			}
-		],
-		"name": "setPermission",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "oldUser",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "newUser",
-				"type": "address"
-			}
-		],
-		"name": "SetPermission",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "_inputPassword",
-				"type": "bytes32"
+				"internalType": "uint256",
+				"name": "_parkingNumber",
+				"type": "uint256"
 			}
 		],
 		"name": "authenticateUser",
@@ -193,6 +148,32 @@ const contractAbi =[
 	{
 		"inputs": [],
 		"name": "getExitTimestamp",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getFeeToken",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getMembershipFee",
 		"outputs": [
 			{
 				"internalType": "uint256",
