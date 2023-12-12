@@ -90,7 +90,7 @@ contract Membership {
     /**
      * @dev 주차비 계산 및 결제 함수
      */
-    function exitFee() external{
+    function exitFee() external {
         require(getTimestamps[msg.sender] != 0, "No entry record found");
 
          // 입차 기록 초기화
