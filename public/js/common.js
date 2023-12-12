@@ -14,7 +14,7 @@ export const connectWallet = async() => {
 	// MetaMask 계정 요청
 	const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
 	const account = accounts[0];
-	console.log(account);
+	
 	// 버튼 텍스트 업데이트
 	document.getElementById('button').textContent = account;
 
