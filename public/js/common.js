@@ -2,11 +2,11 @@ import contractAbi from "./abi.js";
 import tokenAbi from "./tokenabi.js";
 
 // Ethereum 스마트 컨트랙트 주소 
-const contractAddress = '0xf777cC2569Cbcf8D31F4ed63641F3c9d13b35841';
+const contractAddress = '0x70d8C139b724AAb0508de23a16Dfb83457C1D435';
 const web3 = new Web3(window.ethereum);
 let contract = new web3.eth.Contract(contractAbi, contractAddress);
 //FEE token 스마트 컨트랙트 주소
-const tokenContractAddress = '0xa6Bd8Ab2B991C55A3e8ED521376F7A6B20c3A9A0';
+const tokenContractAddress = '0xb8Ed2B591aa92008BcFdbD1DD65254736929F4a0';
 
 
 //connetWallet
